@@ -26,7 +26,7 @@ const check = (price) => {
         <div class="flex">Amount:<div :class="check(list.amount)" class="w-fit rounded-md ml-2">{{list.amount}}</div> </div>
       </div>
 
-      <div class="font-bold flex justify-center border-2 rounded-md mb-4 mt-4 p-2">Net total: {{total}}</div>
+      <div class="flex font-bold border-2 rounded-md p-2 pl-12">Net total:<div class="w-2/3 font-bold pl-12">{{total}}</div></div>
     </div>
 
     
@@ -41,7 +41,7 @@ const check = (price) => {
         <tbody class="" v-for="(list,index) in lists" :key="index">
             <tr>
               <td class="text-left py-1 px-2" >{{list.name}}</td>              
-              <td class="text-right py-1 px-2" ><div :class="check(list.amount)" class="w-fit rounded-md ml-auto">{{list.amount}}</div></td>                 
+              <td class="text-right py-1 px-2" ><div :class="check(list.amount)" class="w-fit ml-auto">{{list.amount}}</div></td>                 
             </tr>
         </tbody>
         <tr class="border-y-2 p-2">
