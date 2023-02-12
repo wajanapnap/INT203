@@ -26,7 +26,7 @@ const comma = (num) => {
     </div>
 
     
-    <div class="md:flex flex-col hidden mt-4 p-2">
+    <div class="md:flex flex-col hidden justify-center mt-4 p-2">
       <table class="w-[45rem]">
         <thead>
           <tr class="border-y-2">
