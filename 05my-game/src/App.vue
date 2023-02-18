@@ -1,11 +1,13 @@
 <script setup>
 import {ref} from 'vue'
-import colorGroups from './data/color-groups.json'
+import colorGroupsJson from './data/color-groups.json'
+
+const colorGroups = colorGroupsJson
 
 const menuVisible =ref(true)
 const gameVisible =ref(false)
-
 const playerName = ref('')
+
 const checkPlayerName = () => {
   if(playerName.value === null || playerName.value === '' ){ 
      playerName.value = 'Guest'
@@ -19,21 +21,51 @@ const toggletoMenu = () => {
   menuVisible.value = !menuVisible.value
   gameVisible.value = !gameVisible.value
   playerName.value = ''
+  document.getElementById("time").innerHTML = ''
   } 
 
 const toggletoGame = () => {
 menuVisible.value = !menuVisible.value
 gameVisible.value = !gameVisible.value
-  checkPlayerName()
+checkPlayerName()
+  document.getElementById("time").innerHTML = '<div id="countdown"></div>'
+
 } 
 
-// const colorRandom = colorGroups[Math.floor(Math.random() * colorGroups.length)];
-// const normalColor = 'bg-[#' + colorRandom.normal + ']'
-const normalColor = colorGroups[1].normal
-// const diffColor = 'bg-[#' + colorRandom.diff + ']'
-console.log(normalColor)
-// console.log(diffColor)
 
+let colorRandom = 0
+let normalColor = ref('')
+let diffColor = ref('')
+
+const changeColor = () => {
+  colorRandom = colorGroups[Math.floor(Math.random() * colorGroups.length)]
+  normalColor.value = 'bg-[#' + colorRandom.normal + ']'
+  diffColor.value = 'bg-[#' + colorRandom.diff + ']'
+
+}
+changeColor()
+
+let score = ref(0)
+
+function addScore(){
+  return score.value++
+}
+
+function correct(){
+  addScore()
+  changeColor()
+}
+
+const timeleft = ref(60);
+const downloadTimer = setInterval(function(){
+  if(timeleft.value <= 0){
+    clearInterval(downloadTimer);
+    document.getElementById("countdown").innerHTML = "Time-out";
+  } else {
+    document.getElementById("countdown").innerHTML = timeleft.value ;
+  }
+  timeleft.value -= 1;
+}, 1000);
     
 </script>
 
@@ -41,7 +73,7 @@ console.log(normalColor)
 
 <div class="w-full h-screen flex justify-center bg-[#9CB1D4]">
 
-  <div class="flex flex-col rounded-2xl m-auto bg-[#26282B]" v-show="false">
+  <div class="flex flex-col rounded-2xl m-auto bg-[#26282B]" v-show="menuVisible">
 
     <div class="flex mx-14 mt-12">
       <img src="./assets/Eccentric.svg" alt="" class="w-60 ">
@@ -78,14 +110,14 @@ console.log(normalColor)
   </div>
 
   <!--game -->
-  <div class="w-full flex flex-row justify-center m-auto" v-show="true">
+  <div class="w-full flex flex-row justify-center m-auto" v-show="gameVisible">
 
     <div class="flex flex-col">
       <div class="font-semibold">PLAYER</div>
       <div class="font-bold text-3xl">{{playerName}}</div>
       <div class="h-4"></div>
       <div class="font-semibold">SCORE</div>
-      <div class="font-bold text-4xl">0</div>
+      <div class="font-bold text-4xl">{{score}}</div>
     </div>
 
     <div class="flex flex-col justify-center">
@@ -93,8 +125,8 @@ console.log(normalColor)
         
         <!-- time -->
         <div class="flex justify-center">
-          <span class="countdown font-mono text-6xl text-white mb-12">
-            <span style="--value:60;"></span>
+          <span id="time" class="font-mono text-6xl text-white mb-12">
+            <!-- <div id="countdown"></div> -->
           </span>
         </div>
 
@@ -103,7 +135,7 @@ console.log(normalColor)
             <div class="rounded-full w-32 h-32" :class="normalColor" ></div>
             <div class="rounded-full w-32 h-32" :class="normalColor"></div>
             <div class="rounded-full w-32 h-32" :class="normalColor"></div>
-            <div class="rounded-full w-32 h-32" :class="diffColor"></div>
+            <div class="rounded-full w-32 h-32" :class="diffColor" @click="correct"></div>
         </div>
         
       </div>

@@ -6,17 +6,17 @@
     },
     {
         "id" : 2,
-        "normal" : "bg-purple-50",
+        "normal" : "A349A4",
         "diff" : "BC54BD"
     },
     {
         "id" : 3,
         "normal" : "FFC90E",
-        "diff" : "F7C30E"
+        "diff" : "E0B210"
     },
     {
         "id" : 4,
         "normal" : "FFAEC9",
-        "diff" : "F7A9C3"
+        "diff" : "E090AA"
     }
 ]
