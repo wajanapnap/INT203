@@ -1,28 +1,55 @@
 <script setup>
 import {ref} from 'vue'
+import colorGroups from './data/color-groups.json'
 
-const manuVisible =ref(true)
+const menuVisible =ref(true)
 const gameVisible =ref(false)
 
-const toggleManu = () => {
-  manuVisible.value = !manuVisible.value
+const playerName = ref('')
+const checkPlayerName = () => {
+  if(playerName.value === null || playerName.value === '' ){ 
+     playerName.value = 'Guest'
+  } else {
+    playerName.value
+  }
+  return playerName.value
+} 
+
+const toggletoMenu = () => {
+  menuVisible.value = !menuVisible.value
   gameVisible.value = !gameVisible.value
+  playerName.value = ''
   } 
 
+const toggletoGame = () => {
+menuVisible.value = !menuVisible.value
+gameVisible.value = !gameVisible.value
+  checkPlayerName()
+} 
+
+// const colorRandom = colorGroups[Math.floor(Math.random() * colorGroups.length)];
+// const normalColor = 'bg-[#' + colorRandom.normal + ']'
+const normalColor = colorGroups[1].normal
+// const diffColor = 'bg-[#' + colorRandom.diff + ']'
+console.log(normalColor)
+// console.log(diffColor)
+
+    
 </script>
 
 <template>
 
 <div class="w-full h-screen flex justify-center bg-[#9CB1D4]">
 
-  <div class="flex flex-col rounded-2xl m-auto bg-[#26282B]" v-show="manuVisible">
+  <div class="flex flex-col rounded-2xl m-auto bg-[#26282B]" v-show="false">
 
     <div class="flex mx-14 mt-12">
       <img src="./assets/Eccentric.svg" alt="" class="w-60 ">
     </div>
     <div class="flex flex-col justify-center m-8">
-      <input type="text" placeholder="Type your name..." class="input w-full max-w-xs placeholder:text-center py-3 my-2" />
-      <button class="btn bg-[#F0F31F] hover:bg-[#A2A418] text-zinc-900 font-bold py-3 my-2" @click="toggleManu">
+      <input type="text" placeholder="Type your name..." class="input w-full max-w-xs placeholder:text-center py-3 my-2"
+             v-model="playerName" />
+      <button class="btn bg-[#F0F31F] hover:bg-[#A2A418] text-zinc-900 font-bold py-3 my-2" @click="toggletoGame">
         LET'S START!
       </button>
       <!-- line -->
@@ -51,11 +78,11 @@ const toggleManu = () => {
   </div>
 
   <!--game -->
-  <div class="w-full flex flex-row justify-center m-auto" v-show="gameVisible">
+  <div class="w-full flex flex-row justify-center m-auto" v-show="true">
 
     <div class="flex flex-col">
       <div class="font-semibold">PLAYER</div>
-      <div class="font-bold text-3xl">GUEST</div>
+      <div class="font-bold text-3xl">{{playerName}}</div>
       <div class="h-4"></div>
       <div class="font-semibold">SCORE</div>
       <div class="font-bold text-4xl">0</div>
@@ -73,16 +100,16 @@ const toggleManu = () => {
 
         <!-- circle -->
         <div class="grid grid-cols-2 gap-2">
-            <div class="bg-green-500 rounded-full w-32 h-32"></div>
-            <div class="bg-green-500 rounded-full w-32 h-32"></div>
-            <div class="bg-green-400 rounded-full w-32 h-32"></div>
-            <div class="bg-green-500 rounded-full w-32 h-32"></div>
+            <div class="rounded-full w-32 h-32" :class="normalColor" ></div>
+            <div class="rounded-full w-32 h-32" :class="normalColor"></div>
+            <div class="rounded-full w-32 h-32" :class="normalColor"></div>
+            <div class="rounded-full w-32 h-32" :class="diffColor"></div>
         </div>
         
       </div>
 
       <div class="flex flex-row justify-center mt-10">
-        <button class="btn bg-[#F0F31F] hover:bg-[#A2A418] text-zinc-900 font-bold border-0 m-2" @click="toggleManu">MAIN MANU</button>
+        <button class="btn bg-[#F0F31F] hover:bg-[#A2A418] text-zinc-900 font-bold border-0 m-2" @click="toggletoMenu">MAIN MENU</button>
         <button class="btn bg-[#F652A0] hover:bg-[#A5356A] text-zinc-900 font-bold border-0 m-2">RESTART GAME</button>
       </div>
     </div>
