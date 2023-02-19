@@ -17,56 +17,74 @@ const checkPlayerName = () => {
   return playerName.value
 } 
 
+let timeleft = ref(60);
+const downloadTimer = setInterval(function(){
+  if(timeleft.value <= 0){
+    clearInterval(downloadTimer);
+    document.getElementById("countdown").innerHTML = "Time-out"
+  } else {
+    document.getElementById("countdown").innerHTML = timeleft.value
+  }
+  timeleft.value -= 1;
+}, 1000);
+
 const toggletoMenu = () => {
   menuVisible.value = !menuVisible.value
   gameVisible.value = !gameVisible.value
   playerName.value = ''
-  document.getElementById("time").innerHTML = ''
+  score = ref(0)  
   } 
 
 const toggletoGame = () => {
 menuVisible.value = !menuVisible.value
 gameVisible.value = !gameVisible.value
 checkPlayerName()
-  document.getElementById("time").innerHTML = '<div id="countdown"></div>'
+document.getElementById("time").innerHTML = '<div id="countdown"></div>'
+timeleft.value = 60
 
 } 
 
+const restartGame = () => {
+  score.value = 0
+  timeleft.value = 60
+  maxCircle = 4
+  changeColor(true)
+  } 
 
+
+console.log(timeleft.value)
+
+let score = ref(0)    
 let colorRandom = 0
 let normalColor = ref('')
 let diffColor = ref('')
+let maxCircle = 4
+let diffPos = 0
+let gridCol = ''
 
-const changeColor = () => {
+const changeColor = (firstLogin) => {
+  if(!firstLogin){
+      score.value++
+    }
   colorRandom = colorGroups[Math.floor(Math.random() * colorGroups.length)]
-  normalColor.value = 'bg-[#' + colorRandom.normal + ']'
-  diffColor.value = 'bg-[#' + colorRandom.diff + ']'
-
-}
-changeColor()
-
-let score = ref(0)
-
-function addScore(){
-  return score.value++
-}
-
-function correct(){
-  addScore()
-  changeColor()
-}
-
-const timeleft = ref(60);
-const downloadTimer = setInterval(function(){
-  if(timeleft.value <= 0){
-    clearInterval(downloadTimer);
-    document.getElementById("countdown").innerHTML = "Time-out";
-  } else {
-    document.getElementById("countdown").innerHTML = timeleft.value ;
+  normalColor = 'bg-[#' + colorRandom.normal + ']'
+  diffColor = 'bg-[#' + colorRandom.diff + ']'
+  if(score.value >= 25){
+    maxCircle = 25
+    // gridCol = 'grid grid-cols-5 gap-2'
+  }else if(score.value >= 15){
+    maxCircle = 16
+    // gridCol = 'grid grid-cols-4 gap-2'
+  }else if(score.value >= 5){
+    maxCircle = 9
+    // gridCol = 'grid grid-cols-3 gap-2'
   }
-  timeleft.value -= 1;
-}, 1000);
-    
+  // maxCircle = 25
+  diffPos = Math.floor(Math.random() * maxCircle)
+  gridCol = 'grid grid-cols-'+Math.sqrt(maxCircle,2).toString()+ ' gap-2'
+}
+
+changeColor(true)    
 </script>
 
 <template>
@@ -131,18 +149,18 @@ const downloadTimer = setInterval(function(){
         </div>
 
         <!-- circle -->
-        <div class="grid grid-cols-2 gap-2">
-            <div class="rounded-full w-32 h-32" :class="normalColor" ></div>
-            <div class="rounded-full w-32 h-32" :class="normalColor"></div>
-            <div class="rounded-full w-32 h-32" :class="normalColor"></div>
-            <div class="rounded-full w-32 h-32" :class="diffColor" @click="correct"></div>
+        <div :class="gridCol">
+          <template v-for="(item,index) in maxCircle">
+            <div v-if="diffPos !== index" class="rounded-full w-32 h-32" :class="normalColor"  :key="item.id">{{index}}</div>
+            <div @click="changeColor(false)" v-if="diffPos === index" class="rounded-full w-32 h-32" :class="diffColor" :key="item.id">{{index}} </div>
+          </template>
         </div>
         
       </div>
 
       <div class="flex flex-row justify-center mt-10">
         <button class="btn bg-[#F0F31F] hover:bg-[#A2A418] text-zinc-900 font-bold border-0 m-2" @click="toggletoMenu">MAIN MENU</button>
-        <button class="btn bg-[#F652A0] hover:bg-[#A5356A] text-zinc-900 font-bold border-0 m-2">RESTART GAME</button>
+        <button class="btn bg-[#F652A0] hover:bg-[#A5356A] text-zinc-900 font-bold border-0 m-2" @click="restartGame">RESTART GAME</button>
       </div>
     </div>
 
