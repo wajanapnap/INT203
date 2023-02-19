@@ -56,7 +56,7 @@ const startGame = () => {
 
   score.value = 0
   circleAmount = 4 
-  timeleft.value = 3 
+  timeleft.value = 60 
   getNewColor(true)  
   
   downloadTimer = setInterval(() => {  
