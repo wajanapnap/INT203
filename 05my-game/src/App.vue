@@ -6,85 +6,101 @@ const colorGroups = colorGroupsJson
 
 const menuVisible =ref(true)
 const gameVisible =ref(false)
+const endGameVisible =ref(false)
+const isGameEnd = ref(false)
 const playerName = ref('')
+let timeleft = ref()
+let score = ref(0) 
+let colorRandom = 0   
+let normalColor = ref('')
+let diffColor = ref('')
+let gridCol = ''
+let circleAmount = 4
+let diffPos = 0
+let circleSize = 'w-32 h-32'
+let downloadTimer
 
 const checkPlayerName = () => {
-  if(playerName.value === null || playerName.value === '' ){ 
+  if(playerName.value.length === 0 || playerName.value === '' ){ 
      playerName.value = 'Guest'
-  } else {
-    playerName.value
   }
   return playerName.value
 } 
 
-let timeleft = ref(60);
-const downloadTimer = setInterval(function(){
-  if(timeleft.value <= 0){
-    clearInterval(downloadTimer);
-    document.getElementById("countdown").innerHTML = "Time-out"
-  } else {
-    document.getElementById("countdown").innerHTML = timeleft.value
-  }
-  timeleft.value -= 1;
-}, 1000);
-
 const toggletoMenu = () => {
-  menuVisible.value = !menuVisible.value
-  gameVisible.value = !gameVisible.value
+  menuVisible.value = true
+  gameVisible.value = false
+  endGameVisible.value = false
   playerName.value = ''
   score = ref(0)  
-  } 
-
-const toggletoGame = () => {
-menuVisible.value = !menuVisible.value
-gameVisible.value = !gameVisible.value
-checkPlayerName()
-document.getElementById("time").innerHTML = '<div id="countdown"></div>'
-timeleft.value = 60
-
 } 
 
-const restartGame = () => {
+const toggletoEndGame = () => {
+  menuVisible.value = false
+  gameVisible.value = false
+  endGameVisible.value = true
+} 
+
+const toggletoGame = () => {
+  menuVisible.value = false
+  gameVisible.value = true
+  endGameVisible.value = false
+  checkPlayerName()
+  startGame()
+} 
+
+const startGame = () => {
+  if(downloadTimer){
+    clearInterval(downloadTimer)
+    }
+
   score.value = 0
-  timeleft.value = 60
-  maxCircle = 4
-  changeColor(true)
-  } 
+  circleAmount = 4 
+  timeleft.value = 3 
+  getNewColor(true)  
+  
+  downloadTimer = setInterval(() => {  
+  if(timeleft.value === 1){
+    clearInterval(downloadTimer)
+    toggletoEndGame()
+    }
+    timeleft.value--
+  }, 1000)
+} 
 
-
-console.log(timeleft.value)
-
-let score = ref(0)    
-let colorRandom = 0
-let normalColor = ref('')
-let diffColor = ref('')
-let maxCircle = 4
-let diffPos = 0
-let gridCol = ''
-
-const changeColor = (firstLogin) => {
+const getNewColor = (firstLogin) => {
   if(!firstLogin){
       score.value++
     }
-  colorRandom = colorGroups[Math.floor(Math.random() * colorGroups.length)]
-  normalColor = 'bg-[#' + colorRandom.normal + ']'
-  diffColor = 'bg-[#' + colorRandom.diff + ']'
   if(score.value >= 25){
-    maxCircle = 25
+    circleAmount = 25
+    circleSize = 'w-16 h-16'
     // gridCol = 'grid grid-cols-5 gap-2'
   }else if(score.value >= 15){
-    maxCircle = 16
+    circleAmount = 16
+    circleSize = 'w-20 h-20'
     // gridCol = 'grid grid-cols-4 gap-2'
   }else if(score.value >= 5){
-    maxCircle = 9
+    circleAmount = 9
+    circleSize = 'w-24 h-24'
     // gridCol = 'grid grid-cols-3 gap-2'
+  }else{
+    circleSize = 'w-32 h-32'
   }
-  // maxCircle = 25
-  diffPos = Math.floor(Math.random() * maxCircle)
-  gridCol = 'grid grid-cols-'+Math.sqrt(maxCircle,2).toString()+ ' gap-2'
+  colorRandom = colorGroups[Math.floor(Math.random() * colorGroups.length)]
+  normalColor = 'bg-[#' + colorRandom.normal + ']' + ' ' + circleSize
+  diffColor = 'bg-[#' + colorRandom.diff + ']' + ' ' + circleSize
+
+  diffPos = Math.floor(Math.random() * circleAmount)
+  gridCol = 'grid grid-cols-'+ Math.sqrt(circleAmount,2).toString() + ' ' + 'gap-1'
 }
 
-changeColor(true)    
+getNewColor(true)
+
+const restartGame = () =>{
+  toggletoGame()
+  startGame()
+}
 </script>
 
 <template>
@@ -143,16 +159,14 @@ changeColor(true)
         
         <!-- time -->
         <div class="flex justify-center">
-          <span id="time" class="font-mono text-6xl text-white mb-12">
-            <!-- <div id="countdown"></div> -->
-          </span>
+          <span id="time" class="font-mono text-6xl text-white mb-12">{{timeleft}}</span>
         </div>
 
         <!-- circle -->
         <div :class="gridCol">
-          <template v-for="(item,index) in maxCircle">
-            <div v-if="diffPos !== index" class="rounded-full w-32 h-32" :class="normalColor"  :key="item.id">{{index}}</div>
-            <div @click="changeColor(false)" v-if="diffPos === index" class="rounded-full w-32 h-32" :class="diffColor" :key="item.id">{{index}} </div>
+          <template v-for="(item,index) in circleAmount">
+            <div v-if="diffPos !== index" class="rounded-full" :class="normalColor" :key="item.id"></div>
+            <div @click="getNewColor(false)" v-if="diffPos === index" class="rounded-full" :class="diffColor" :key="item.id"></div>
           </template>
         </div>
         
@@ -160,12 +174,34 @@ changeColor(true)
 
       <div class="flex flex-row justify-center mt-10">
         <button class="btn bg-[#F0F31F] hover:bg-[#A2A418] text-zinc-900 font-bold border-0 m-2" @click="toggletoMenu">MAIN MENU</button>
-        <button class="btn bg-[#F652A0] hover:bg-[#A5356A] text-zinc-900 font-bold border-0 m-2" @click="restartGame">RESTART GAME</button>
+        <button class="btn bg-[#F652A0] hover:bg-[#A5356A] text-zinc-900 font-bold border-0 m-2" @click="startGame">RESTART GAME</button>
       </div>
     </div>
 
   </div>
+  <!--end game -->
+  
+  <div class="w-full flex flex-row justify-center m-auto" v-show="endGameVisible">
+    <div class="flex flex-col justify-center">
 
+      <div class="flex flex-col rounded-2xl bg-[#26282B] mx-10 px-10 pt-6 pb-10" >  
+        <div class="flex flex-col gap-6">
+
+          <div class="flex-col text-center font-bold text-yellow-400 text-3xl">Congratulations!</div>
+          <div class="flex-col text-center font-bold text-white text-3xl">{{playerName}}</div>
+          <div class="flex-col text-center font-bold text-white text-3xl">You got <span class="text-4xl">{{score}}</span> points</div>
+
+        </div>
+      </div>
+
+      <div class="flex flex-row justify-center mt-10">
+        <button class="btn bg-[#F0F31F] hover:bg-[#A2A418] text-zinc-900 font-bold border-0 m-2" @click="toggletoMenu">MAIN MENU</button>
+        <button class="btn bg-[#F652A0] hover:bg-[#A5356A] text-zinc-900 font-bold border-0 m-2" @click="restartGame">RESTART GAME</button>
+      </div>
+
+    </div>
+  </div>
+      
 </div>
 
 </template>
