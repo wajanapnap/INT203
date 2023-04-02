@@ -88,6 +88,9 @@ const getNewColor = (firstLogin) => {
     circleSize = 'w-32 h-32'
   }
   colorRandom = colorGroups[Math.floor(Math.random() * colorGroups.length)]
+  if(colorGroups[Math.floor(Math.random() * colorGroups.length)] === colorRandom){
+    
+  }
   normalColor = 'bg-[#' + colorRandom.normal + ']' + ' ' + circleSize
   diffColor = 'bg-[#' + colorRandom.diff + ']' + ' ' + circleSize
 
