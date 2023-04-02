@@ -1,18 +1,18 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { getHistory } from "../composable/History";
+import { ref, onMounted } from "vue"
+import { getHistory } from "../composable/History"
 
-const priceList = ref([]);
+const priceList = ref([])
 onMounted(async () => {
-    priceList.value = await getHistory();
+    priceList.value = await getHistory()
 })
 
 const sumPrice = () => {
-  let price = 0;
+  let price = 0
   for (let i = 0; i < priceList.value.length; i++) {
-    price += parseInt(priceList.value[i].total);
+    price += parseInt(priceList.value[i].total)
   }
-  return price;
+  return price
 };
 
 const deletePrice = async (id) => {
@@ -33,35 +33,37 @@ const deletePrice = async (id) => {
 
 <template>
   <div>
-    <h1 class="text-center text-zinc-800 text-3xl font-semibold mx-48">
+    <h1 class="text-center text-zinc-800 text-3xl font-semibold mx-28">
       History
     </h1>
 
     <div
-      class="flex flex-col justify-center rounded-2xl bg-zinc-200 mx-48 my-5 px-0.5 py-10 gap-y-4"
+      class="flex flex-col justify-center rounded-2xl bg-zinc-200 mx-28 my-5 px-0.5 py-10 gap-y-4"
     >
       <!-- list -->
+      <div class="flex flex-row font-bold">
+        <div class="flex w-1/12"></div>
+        <div class="flex w-3/12">Date</div>
+        <div class="flex w-3/12">Customer</div>
+        <div class="flex w-3/12">Discount</div>
+        <div class="flex w-1/12">Purchase</div>
+      </div>
       <div class="flex flex-col text-lg bg-white p-10 gap-y-4 gap-x-2"  
           v-for="(price, index) in priceList"
           :key="index">
-        <div class="flex flex-row font-bold">
-          <div class="flex w-1/12"></div>
-          <div class="flex w-3/12">Date</div>
-          <div class="flex w-3/12">Customer</div>
-          <div class="flex w-3/12">Discount</div>
-          <div class="flex w-1/12">Purchase</div>
-        </div>
+        
         <div class="flex flex-row">
-          <div class="flex w-1/12"> <router-link :to="{ path: '/cashier/' + price.id }">edit</router-link></div>
+          <button class="flex w-1/12 font-semibold"> <router-link :to="{ path: '/cashier/' + price.id }">Edit</router-link></button>
           <div class="flex w-3/12">
             {{price.date}}
           </div>
           <div class="flex w-3/12">{{ price.isMember }}</div>
           <div class="flex w-3/12 text-red-600">{{ price.discount ? price.discount + '%' : '-'}}  </div>
           <div class="flex w-1/12">{{ price.total }} ฿</div>
-          <div class="flex w-1/12 text-right text-red-600" @click="deletePrice(price.id)">delete</div>
+          <button class="flex w-1/12 text-right text-red-600 font-semibold" @click="deletePrice(price.id)">Delete</button>
         </div>
-        <div class="flex flex-row justify-end">
+      </div>
+      <div class="flex flex-row justify-end">
           <div class="flex"></div>
           <div class="flex mt-6 gap-x-2 text-xl font-semibold">
             Total
@@ -69,7 +71,6 @@ const deletePrice = async (id) => {
           </div>
           <div class="flex w-1/12"></div>
         </div>
-      </div>
     </div>
   </div>
 

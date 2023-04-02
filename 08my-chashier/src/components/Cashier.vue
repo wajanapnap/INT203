@@ -1,120 +1,128 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { getCashier } from "../composable/Cashier";
+import { ref, onMounted } from "vue"
+import { getCashier } from "../composable/Cashier"
 
 const props = defineProps({
   id: {
     type: String,
   },
-});
-const price = ref(0);
-const priceList = ref([]);
-const isMember = ref("guest");
-const totalPrice = ref(0);
+})
+const price = ref(0)
+const priceList = ref([])
+const isMember = ref("guest")
+const totalPrice = ref(0)
 
 onMounted(async () => {
   if (props.id) {
-    const cashier = await getCashier(props.id);
+    const cashier = await getCashier(props.id)
     priceList.value = cashier.priceList
     isMember.value = cashier.isMember
   }
 });
 
 const addPrice = (price) => {
-  priceList.value.push(price);
-  console.log(priceList.value);
+  priceList.value.push(price)
+  console.log(priceList.value)
 };
 
 const deletePrice = (index) => {
-  priceList.value.splice(index, 1);
-  console.log(priceList.value);
+  priceList.value.splice(index, 1)
+  console.log(priceList.value)
 };
 
 const sumPrice = () => {
-  let price = 0;
+  let price = 0
   for (let i = 0; i < priceList.value.length; i++) {
-    price += parseInt(priceList.value[i]);
+    price += parseInt(priceList.value[i])
   }
-  totalPrice.value = price;
-  return price;
+  totalPrice.value = price
+  return price
 };
 
 const calPercent = () => {
-  let percent = 0;
+  let percent = 0
   if (isMember.value !== "guest") {
     if (sumPrice() >= 30000) {
-      percent = 30;
+      percent = 30
     } else if (sumPrice() >= 15000) {
-      percent = 20;
+      percent = 20
     } else if (sumPrice() >= 8000) {
-      percent = 10;
+      percent = 10
     } else if (sumPrice() >= 5000) {
-      percent = 5;
+      percent = 5
     } else {
-      percent = 0;
+      percent = 0
     }
-    return percent;
+    return percent
   }
   // console.log("test");
-};
+}
 
 const percentColor = (showPercent) => {
   if (calPercent() === showPercent) {
-    return "bg-green-300 text-green-900";
+    return "bg-green-300 text-green-900"
   } else {
-    return "bg-zinc-300 text-zinc-500";
+    return "bg-zinc-300 text-zinc-500"
   }
 };
 
 const discount = () => {
   if (isMember.value !== "guest") {
-    let discountValue = 0;
+    let discountValue = 0
     if (calPercent() === 30) {
-      discountValue = totalPrice.value * 0.3;
-      totalPrice.value = totalPrice.value - discountValue;
+      discountValue = totalPrice.value * 0.3
+      totalPrice.value = totalPrice.value - discountValue
     } else if (calPercent() === 20) {
-      discountValue = totalPrice.value * 0.2;
-      totalPrice.value = totalPrice.value - discountValue;
+      discountValue = totalPrice.value * 0.2
+      totalPrice.value = totalPrice.value - discountValue
     } else if (calPercent() === 10) {
-      discountValue = totalPrice.value * 0.1;
-      totalPrice.value = totalPrice.value - discountValue;
+      discountValue = totalPrice.value * 0.1
+      totalPrice.value = totalPrice.value - discountValue
     } else if (calPercent() === 5) {
-      discountValue = totalPrice.value * 0.05;
-      totalPrice.value = totalPrice.value - discountValue;
+      discountValue = totalPrice.value * 0.05
+      totalPrice.value = totalPrice.value - discountValue
     }
-    totalPrice.value = totalPrice.value.toFixed(2);
-    return discountValue.toFixed(2);
+    totalPrice.value = totalPrice.value.toFixed(2)
+    return discountValue.toFixed(2)
   }
 };
 // discount()
 // console.log(totalPrice.value)
 const addEditNewHistory = async (id) => {
-
-  const url = id? `http://localhost:5000/history/${id}` : "http://localhost:5000/history"
+  // console.log(newList)
+  //date time
+  const url = 'http://localhost:5000/history'
+  const method = 'POST'
+  if(id && id != 0){
+    url = `http://localhost:5000/history/${id}`
+    method = 'PUT'
+  }
   const priceCreate = {};
   priceCreate.date = new Date().toLocaleString();
-  priceCreate.discount = calPercent();
-  priceCreate.total = totalPrice.value;
-  priceCreate.isMember = isMember.value;
-  priceCreate.priceList = priceList.value;
+  // add discount to updatedList
+  priceCreate.discount = calPercent()
+  // add total to updatedList
+  priceCreate.total = totalPrice.value
+  priceCreate.isMember = isMember.value
+  priceCreate.priceList = priceList.value
   if (totalPrice.value.total !== 0) {
     try {
       const res = await fetch(url, {
-        method: "PUT",
+        method: method,
         headers: {
           "content-type": "application/json",
         },
         body: JSON.stringify(priceCreate),
       });
       if (res.ok) {
-        console.log("add successfully");
+        console.log("add successfully")
         // const addedList = await res.json()
         // list.value.push(addedList)
         // console.log(list.value)
         priceList.value = []
         isMember.value = 'guest'
       } else {
-        throw new Error("cannot add");
+        throw new Error("cannot add")
       }
     } catch (err) {
       console.log(err);
@@ -143,17 +151,14 @@ const addEditNewHistory = async (id) => {
         <button
           type="submit"
           class="w-1/6 rounded-md bg-zinc-600 px-3 py-2 font-semibold text-white shadow-sm hover:bg-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-600"
-          @click="
-            addPrice(price);
-            sumPrice();
-          "
+          @click="addPrice(price) ; sumPrice()"
         >
-          Add
+        Add
         </button>
       </div>
-      <div>
+      <div class="rounded-md bg-white">
         <div
-          class="flex flex-row rounded-md bg-white text-lg font-base p-10"
+          class="flex flex-row text-lg font-base p-4"
           v-for="(price, index) in priceList"
           :key="index"
         >
@@ -161,7 +166,7 @@ const addEditNewHistory = async (id) => {
             {{ index + 1 }}
           </div>
           <div class="flex w-9/12">{{ price }} ฿</div>
-          <div class="flex w-1/12" @click="deletePrice(index)">bin icon</div>
+          <button class="flex w-1/12 text-red-600 font-semibold" @click="deletePrice(index)">Delete</button>
         </div>
       </div>
 
