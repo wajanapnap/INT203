@@ -11,7 +11,7 @@ import Navbar from './components/Navbar.vue'
  <div>
   <div>
     <Navbar class="mb-5"/>
-    <RouterView/>
+    <RouterView :key="$route.path" />
   </div>
 
  </div>

@@ -6,7 +6,15 @@ const routes = [
     {
         path: '/',
         name: 'Cashier',
-        component: Cashier
+        component: Cashier,
+        
+    },
+    {
+        path: '/cashier/:id',
+        name: 'CashierEdit',
+        component: Cashier,
+        props: true,
+        
     },
     {
         path: '/history',
