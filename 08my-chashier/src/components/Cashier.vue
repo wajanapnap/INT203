@@ -7,7 +7,7 @@ const props = defineProps({
     type: String,
   },
 })
-const price = ref(0)
+const price = ref()
 const priceList = ref([])
 const isMember = ref("guest")
 const totalPrice = ref(0)
@@ -88,20 +88,18 @@ const discount = () => {
 };
 // discount()
 // console.log(totalPrice.value)
-const addEditNewHistory = async (id) => {
+const editNewHistory = async (id) => {
   // console.log(newList)
   //date time
-  const url = 'http://localhost:5000/history'
-  const method = 'POST'
+  let url = 'http://localhost:5000/history'
+  let method = 'POST'
   if(id && id != 0){
     url = `http://localhost:5000/history/${id}`
     method = 'PUT'
   }
   const priceCreate = {};
   priceCreate.date = new Date().toLocaleString();
-  // add discount to updatedList
   priceCreate.discount = calPercent()
-  // add total to updatedList
   priceCreate.total = totalPrice.value
   priceCreate.isMember = isMember.value
   priceCreate.priceList = priceList.value
@@ -116,9 +114,6 @@ const addEditNewHistory = async (id) => {
       });
       if (res.ok) {
         console.log("add successfully")
-        // const addedList = await res.json()
-        // list.value.push(addedList)
-        // console.log(list.value)
         priceList.value = []
         isMember.value = 'guest'
       } else {
@@ -240,7 +235,7 @@ const addEditNewHistory = async (id) => {
           <button
             type="submit"
             class="w-1/6 rounded-md bg-indigo-600 px-3 py-2 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            @click="addEditNewHistory(props.id || 0)"
+            @click="editNewHistory(props.id || 0)"
           >
             Confirm
           </button>
